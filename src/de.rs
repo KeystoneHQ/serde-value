@@ -1,8 +1,12 @@
 use serde::{forward_to_deserialize_any, de};
-use std::collections::BTreeMap;
-use std::error::Error;
-use std::fmt;
-use std::marker::PhantomData;
+use alloc::collections::btree_map::BTreeMap;
+use core::error::Error;
+use core::fmt;
+use core::marker::PhantomData;
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
+use alloc::boxed::Box;
+use crate::alloc::borrow::ToOwned;
 
 use crate::Value;
 
@@ -340,7 +344,7 @@ impl<'de, E> de::Deserializer<'de> for ValueDeserializer<E> where E: de::Error {
             Value::F32(v) => visitor.visit_f32(v),
             Value::F64(v) => visitor.visit_f64(v),
             Value::Char(v) => visitor.visit_char(v),
-            Value::String(v) => visitor.visit_string(v),
+            Value::String(v) => visitor.visit_str(v.as_str()),
             Value::Unit => visitor.visit_unit(),
             Value::Option(None) => visitor.visit_none(),
             Value::Option(Some(v)) => visitor.visit_some(ValueDeserializer::new(*v)),
